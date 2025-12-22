@@ -43,4 +43,14 @@ impl Universe {
             .get_mut(&_entity)?
             .downcast_mut::<T>()
     }
+    fn query<T: 'static>(&self) -> impl Iterator <Item = (Entity, &T)> {
+        let type_id = TypeId::of::<T>();
+        self.components
+            .get(&type_id)
+            .into_iter()
+            .flat_map(| map | map.iter())
+            .map(|(entity, component)| {
+                (*entity, component.downcast_ref::<T>().unwrap())
+            })
+    }
 }
