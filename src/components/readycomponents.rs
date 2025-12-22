@@ -20,7 +20,7 @@ pub struct Engine_object_3D {
 #[allow(unused)]
 #[allow(nonstandard_style)]
 impl Engine_object_3D {
-    fn new(position: raylib::ffi::Vector3, c: raylib::ffi::Color, shape: Option<Engine_enum_shape_3D>) -> Self{
+    pub fn new(position: raylib::ffi::Vector3, c: raylib::ffi::Color, shape: Option<Engine_enum_shape_3D>) -> Self{
         let res: Option<raylib::ffi::Model>;
         match shape {
             Some(Data) => {
@@ -43,7 +43,7 @@ impl Engine_object_3D {
         }
         Self { position, rendermodel: res, color: c }
     }
-    fn draw(&mut self) {
+    pub fn draw(&mut self) {
         if let Some(Data) = self.rendermodel {
             unsafe {
                 raylib::ffi::DrawModel(Data, self.position, 1.0, self.color);
@@ -55,7 +55,7 @@ impl Engine_object_3D {
 // that's for using new function in FFI instead of prelude, more convinient for imo
 #[allow(unused)]
 #[allow(nonstandard_style)]
-trait Easypaint {
+pub trait Easypaint {
     fn new(r: u8, g: u8, b: u8, a: u8) -> raylib::ffi::Color;
     fn from_prelude(p: raylib::prelude::Color) -> raylib::ffi::Color;
 }
