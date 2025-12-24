@@ -14,14 +14,48 @@ pub enum Engine_enum_shape_3D {
 pub struct Engine_body_3D {
     position: raylib::ffi::Vector3,
     rendermodel: Option<raylib::ffi::Model>,
-    geometryshape: Option<Engine_enum_shape_3D>,
+    geometry: Option<Engine_enum_shape_3D>,
     color: raylib::ffi::Color,
 }
 
 #[allow(unused)]
 #[allow(nonstandard_style)]
 impl Engine_body_3D {
-    
+    pub fn new(position: raylib::ffi::Vector3, geometry: Option<Engine_enum_shape_3D>, color: raylib::ffi::Color) -> Self {
+        match geometry {
+            Some(gm) => {
+                match gm {
+                    Engine_enum_shape_3D::AS_RECTANGLE { x, y, z } => {
+                        unsafe {
+                            return Self{position, rendermodel: Some(raylib::ffi::LoadModelFromMesh(raylib::ffi::GenMeshCube(x, y, z))), geometry: Some(gm), color};
+                        }
+                    },
+                    Engine_enum_shape_3D::AS_BALL { r } => {
+                        unsafe {
+                            return Self {position, rendermodel: Some(raylib::ffi::LoadModelFromMesh(raylib::ffi::GenMeshSphere(r, 16, 16))), geometry: Some(gm), color};
+                        }
+                    }
+                }
+            },
+            None => {},
+        }
+        Self {position , rendermodel: None, geometry, color }
+    }
+    pub fn Unload(&mut self) {
+        if let Some(rm) = self.rendermodel {
+            unsafe {
+                raylib::ffi::UnloadModel(rm);
+            }
+            self.rendermodel = None;
+        }
+    }
+    pub fn Draw(&mut self) {
+        if let Some(rm) = self.rendermodel {
+            unsafe {
+                raylib::ffi::DrawModel(rm, self.position, 1.0, self.color);
+            }
+        }
+    }
 }
 
 // that's for using new function in FFI instead of prelude, more convinient for imo
